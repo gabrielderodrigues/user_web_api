@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using UserWebAPI.Data.Dto.User;
+using UserWebAPI.Models;
+using UserWebAPI.Services;
 
 namespace UserWebAPI.Controllers
 {
@@ -7,10 +11,18 @@ namespace UserWebAPI.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        [HttpPost]
-        public IActionResult CreateUser(CreateUserDto userDto)
+        private readonly UserAppService _userAppService;
+
+        public UserController(UserAppService userAppService)
         {
-            throw new NotImplementedException();
+            _userAppService = userAppService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateUser(CreateUserDto userDto)
+        {
+            await _userAppService.CreateAsync(userDto);
+            return Ok($"Usuário Cadastrado!");
         }
     }
 }
