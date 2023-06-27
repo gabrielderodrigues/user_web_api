@@ -14,7 +14,7 @@ using UserWebAPI.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add Connection with DB
-builder.Services.AddDbContext<UserDbContext>(opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("UserConnection")));
+builder.Services.AddDbContext<UserDbContext>(opts => opts.UseSqlServer(builder.Configuration["ConnectionStrings:UserConnection"]));
 
 builder.Services
     .AddIdentity<User, IdentityRole>()
@@ -59,7 +59,7 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters 
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("9AS9DA9DA9SAS9DAS9DA9SAD9ASDD9F9")),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["SymmetricSecurityKey"])),
         ValidateAudience = false,
         ValidateIssuer = false,
         ClockSkew = TimeSpan.Zero,
