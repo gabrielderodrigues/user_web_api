@@ -8,21 +8,28 @@ using UserWebAPI.Services;
 namespace UserWebAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[Controller]")]
     public class UserController : ControllerBase
     {
-        private readonly UserAppService _userAppService;
+        private readonly UserService _userService;
 
-        public UserController(UserAppService userAppService)
+        public UserController(UserService userService)
         {
-            _userAppService = userAppService;
+            _userService = userService;
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateUser(CreateUserDto userDto)
         {
-            await _userAppService.CreateAsync(userDto);
+            await _userService.CreateAsync(userDto);
             return Ok($"Usuário Cadastrado!");
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Authenticate(LoginUserDto dto)
+        {
+            var tokenResult = await _userService.Authenticate(dto);
+            return Ok(tokenResult);
         }
     }
 }

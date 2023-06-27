@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using UserWebAPI.Authorization;
 using UserWebAPI.Data.Context;
 using UserWebAPI.Models;
 using UserWebAPI.Services;
@@ -21,7 +22,9 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddScoped<UserAppService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<TokenService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -43,6 +46,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("IdadeMinima", policy =>
+         policy.AddRequirements(new MinimumAge(18))
+    );
+});
 
 var app = builder.Build();
 
