@@ -3,7 +3,7 @@
 namespace UserWebAPI.Controllers
 {
     [ApiController]
-    [Route("Controller]")]
+    [Route("[Controller]")]
     public class AccessController : ControllerBase
     {
         [HttpGet]
