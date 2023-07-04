@@ -3,46 +3,45 @@ using Microsoft.AspNetCore.Identity;
 using UserWebAPI.Data.Dto.User;
 using UserWebAPI.Models;
 
-namespace UserWebAPI.Services
+namespace UserWebAPI.Services;
+
+public class UserService
 {
-    public class UserService
+    private readonly IMapper _mapper;
+    private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signInManager;
+    private readonly TokenService _tokenService;
+
+    public UserService(IMapper mapper,
+        UserManager<User> userManager,
+        SignInManager<User> signInManager,
+        TokenService tokenService)
     {
-        private readonly IMapper _mapper;
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly TokenService _tokenService;
+        _mapper = mapper;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _tokenService = tokenService;
+    }
 
-        public UserService(IMapper mapper,
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            TokenService tokenService)
-        {
-            _mapper = mapper;
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _tokenService = tokenService;
-        }
+    public async Task CreateAsync(CreateUserDto userDto)
+    {
+        User user = _mapper.Map<User>(userDto);
 
-        public async Task CreateAsync(CreateUserDto userDto)
-        {
-            User user = _mapper.Map<User>(userDto);
+        var result = await _userManager.CreateAsync(user, userDto.Password);
 
-            var result = await _userManager.CreateAsync(user, userDto.Password);
+        if (!result.Succeeded) throw new ApplicationException("Falha ao cadastrar usuário!");
+    }
 
-            if (!result.Succeeded) throw new ApplicationException("Falha ao cadastrar usuário!");
-        }
+    public async Task<string> Authenticate(LoginUserDto dto)
+    {
+        var loginResult = await _signInManager.PasswordSignInAsync(dto.UserName, dto.Password, false, false);
 
-        public async Task<string> Authenticate(LoginUserDto dto)
-        {
-            var loginResult = await _signInManager.PasswordSignInAsync(dto.UserName, dto.Password, false, false);
+        if (loginResult.Succeeded) throw new ApplicationException("User not authenticated.");
 
-            if (loginResult.Succeeded) throw new ApplicationException("User not authenticated.");
+        var user = _signInManager.UserManager.Users.FirstOrDefault(user => user.UserName == dto.UserName.ToUpper());
 
-            var user = _signInManager.UserManager.Users.FirstOrDefault(user => user.UserName == dto.UserName.ToUpper());
+        var tokenResult = _tokenService.GenerateToken(user);
 
-            var tokenResult = _tokenService.GenerateToken(user);
-
-            return tokenResult;
-        }
+        return tokenResult;
     }
 }

@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace UserWebAPI.Controllers
+namespace UserWebAPI.Controllers;
+
+[ApiController]
+[Route("[Controller]")]
+public class AccessController : ControllerBase
 {
-    [ApiController]
-    [Route("[Controller]")]
-    public class AccessController : ControllerBase
+    [HttpGet]
+    public IActionResult Get()
     {
-        [HttpGet]
-        public IActionResult Get()
-        {
-            return Ok("Access allowed.");
-        }
+        return Ok("Access allowed.");
     }
 }

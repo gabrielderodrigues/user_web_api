@@ -2,13 +2,12 @@
 using UserWebAPI.Data.Dto.User;
 using UserWebAPI.Models;
 
-namespace UserWebAPI.Profiles
+namespace UserWebAPI.Profiles;
+
+public class UserProfile : Profile
 {
-    public class UserProfile : Profile
+    public UserProfile()
     {
-        public UserProfile()
-        {
-            CreateMap<CreateUserDto, User>();
-        }
+        CreateMap<CreateUserDto, User>();
     }
 }
